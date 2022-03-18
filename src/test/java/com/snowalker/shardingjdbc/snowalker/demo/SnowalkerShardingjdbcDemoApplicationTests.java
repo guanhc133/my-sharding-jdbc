@@ -2,8 +2,10 @@ package com.snowalker.shardingjdbc.snowalker.demo;
 
 import com.snowalker.shardingjdbc.snowalker.demo.complex.sharding.constant.DbAndTableEnum;
 import com.snowalker.shardingjdbc.snowalker.demo.complex.sharding.entity.OrderNewInfoEntity;
+import com.snowalker.shardingjdbc.snowalker.demo.complex.sharding.entity.UserInfoEntity;
 import com.snowalker.shardingjdbc.snowalker.demo.complex.sharding.sequence.KeyGenerator;
 import com.snowalker.shardingjdbc.snowalker.demo.complex.sharding.service.OrderNewSerivce;
+import com.snowalker.shardingjdbc.snowalker.demo.complex.sharding.service.UserService;
 import com.snowalker.shardingjdbc.snowalker.demo.entity.OrderInfo;
 import com.snowalker.shardingjdbc.snowalker.demo.service.OrderService;
 import org.junit.Test;
@@ -93,6 +95,8 @@ public class SnowalkerShardingjdbcDemoApplicationTests {
 
     @Autowired
     OrderNewSerivce orderNewSerivce;
+    @Autowired
+    UserService userService;
 
     /**
      * 测试新的订单入库
@@ -102,13 +106,19 @@ public class SnowalkerShardingjdbcDemoApplicationTests {
         // 支付宝或者微信uid
         for (int i = 0; i < 1; i++) {
             String outId = "1232132131241241243126" + i;
+            String name = "snowalker" + String.valueOf(i);
             LOGGER.info("获取id开始");
             String innerUserId = keyGenerator.generateKey(DbAndTableEnum.T_USER, outId);
             LOGGER.info("外部id={},内部用户={}", outId, innerUserId);
+            UserInfoEntity userInfoEntity = new UserInfoEntity();
+            userInfoEntity.setUserId(innerUserId);
+            userInfoEntity.setUserName(name);
+            userService.addUser(userInfoEntity);
+
             String orderId = keyGenerator.generateKey(DbAndTableEnum.T_NEW_ORDER, innerUserId);
             LOGGER.info("外部id={},内部用户={},订单={}", outId, innerUserId, orderId);
             OrderNewInfoEntity orderInfo = new OrderNewInfoEntity();
-            orderInfo.setUserName("snowalker");
+            orderInfo.setUserName(name);
             orderInfo.setUserId(innerUserId);
             orderInfo.setOrderId(orderId);
             orderNewSerivce.addOrder(orderInfo);
@@ -121,11 +131,15 @@ public class SnowalkerShardingjdbcDemoApplicationTests {
      */
     @Test
     public void testQueryNewOrderById() {
-        String orderId = "OD010001011903261549424993200011";
-        String userId = "UD030001011903261549424973200007";
+        String orderId = "OD010000012203161724407235600030";
+        /**
+         * 用户信息表 UD+db+table+01+yyMMddHHmmssSSS+机器id+序列号id
+         * 例如：UD 000000 01 190226123010334 53 00002 共 2+6+2+15+2+5=32位
+         */
+        String userId = "UD010002012203161724407205600004";
         OrderNewInfoEntity orderInfo = new OrderNewInfoEntity();
         orderInfo.setOrderId(orderId);
-        orderInfo.setUserId(userId);
+//        orderInfo.setUserId(userId);
         System.out.println(orderNewSerivce.queryOrderInfoByOrderId(orderInfo));
     }
 
@@ -134,7 +148,7 @@ public class SnowalkerShardingjdbcDemoApplicationTests {
      */
     @Test
     public void testQueryNewOrderList() {
-        String userId = "UD030001011903261549424973200007";
+        String userId = "UD020000012203161432366085600002";
         OrderNewInfoEntity orderInfo = new OrderNewInfoEntity();
         orderInfo.setUserId(userId);
         List<OrderNewInfoEntity> list = new ArrayList<>();

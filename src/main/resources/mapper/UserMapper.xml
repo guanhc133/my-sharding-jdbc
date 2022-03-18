@@ -2,6 +2,17 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.snowalker.shardingjdbc.snowalker.demo.complex.sharding.mapper.UserMapper">
-
+<insert id="addUser"
+            parameterType="com.snowalker.shardingjdbc.snowalker.demo.complex.sharding.entity.UserInfoEntity">
+	  insert into t_user(
+          user_id,
+          user_name
+	  )
+	  values
+	  (
+          #{userId},
+          #{userName}
+	  )
+	</insert>
 
 </mapper>

@@ -88,6 +88,9 @@ public class KeyGenerator {
                 .fillZero(preTbIndex,ShardingConstant.TABLE_SUFFIX_LENGTH);
         map.put("dbIndex", dbIndex);
         map.put("tbIndex", tbIndex);
+        if (targetEnum.equals(DbAndTableEnum.T_USER) && Integer.valueOf(preTbIndex) > 4) {
+            System.out.println("===================表后缀超长，当前表为：" + tbIndex);
+        }
         return map;
     }
 

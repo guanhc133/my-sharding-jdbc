@@ -1,5 +1,6 @@
 package com.snowalker.shardingjdbc.snowalker.demo.complex.sharding.util;
 
+import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
@@ -88,7 +89,18 @@ public class StringUtil {
         String str = getAscII(obj == null?"":obj.toString());
         BigDecimal bc = new BigDecimal(str);
         BigDecimal[] results = bc.divideAndRemainder(new BigDecimal(num));
+        //[bc和num的商,bc和num取模]  这里取results[1]也就是取模之后的值，   任意数和num（表数量）取模，结果值范围在0~num-1 ，以t_user为例，共16张表，取模的范围为0~15
         return (long)results[1].intValue();
+    }
+
+    public static void main(String[] args) {
+        for (int i = 0; i < 16; i++) {
+            BigDecimal[] results = new BigDecimal(i).divideAndRemainder(new BigDecimal(4));
+            System.out.println(JSON.toJSONString(results[0]));
+
+        }
+
+
     }
 
     /**
@@ -100,7 +112,26 @@ public class StringUtil {
     public static long getDbIndexByMod(Object obj,int dbCount,int tbCount) {
         long tbRange = getModValue(obj, tbCount);
         BigDecimal bc = new BigDecimal(tbRange);
-        BigDecimal[] results = bc.divideAndRemainder(new BigDecimal(dbCount/tbCount));
+        //这里拿到tbRange的值 为getModValue返回的表取模之后的值，不会超过表的数量，如t_user总共16张表
+        BigDecimal[] results = bc.divideAndRemainder(new BigDecimal(dbCount));
+        //[bc和dbCount的商,bc和dbCount取模]，这里取商值,范围在0到dbCount之间，不包含dbCount 这里就可以取到DB下标
+        //eg,4个库，每个库4个user表，共16张user表，那么取模后tbRange范围为0到15，results取商后results[0]范围为0
+        //0
+        //0
+        //0
+        //1
+        //1
+        //1
+        //1
+        //2
+        //2
+        //2
+        //2
+        //3
+        //3
+        //3
+        //3
+        //可以看到数据库下标是均匀分布的0-3，和我们的库数量一致
         return (long)results[0].intValue();
     }
 

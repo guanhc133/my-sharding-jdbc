@@ -1,5 +1,8 @@
 package com.snowalker.shardingjdbc.snowalker.demo.complex.sharding.mapper;
 
+import com.snowalker.shardingjdbc.snowalker.demo.complex.sharding.entity.OrderNewInfoEntity;
+import com.snowalker.shardingjdbc.snowalker.demo.complex.sharding.entity.UserInfoEntity;
+
 /**
  * @author snowalker
  * @version 1.0
@@ -8,4 +11,7 @@ package com.snowalker.shardingjdbc.snowalker.demo.complex.sharding.mapper;
  * @desc 用户Mapper
  */
 public interface UserMapper {
+
+    int addUser(UserInfoEntity userInfoEntity);
+
 }

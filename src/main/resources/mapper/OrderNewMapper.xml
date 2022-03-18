@@ -21,9 +21,15 @@
             t.user_id as userId,
             t.order_id as orderId,
             t.user_name as userName
-        from t_new_order t
-        where t.order_id=#{orderId}
-        and t.user_id=#{userId}
+        from t_new_order t,t_user u
+        where t.user_id = u.user_id
+        <if test="null != userId">
+            and u.user_id = #{userId};
+        </if>
+        <if test="null != orderId">
+            and t.order_id = #{orderId};
+        </if>
+
 	</select>
 
     <!--订单入库-->
